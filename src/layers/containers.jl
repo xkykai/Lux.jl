@@ -442,10 +442,14 @@ Chain(
           #        plus 7 states.
 ```
 """
-struct Chain{T <: NamedTuple} <: AbstractExplicitContainerLayer{(:layers,)}
+struct Chain{T <: NamedTuple, N} <: AbstractExplicitContainerLayer{(:layers,)}
     layers::T
-    name::NAME_TYPE
+    name::N
 end
+
+using Adapt
+
+Adapt.adapt_structure(to, x::Chain) = Chain(Adapt.adapt(to, x.layers), nothing)
 
 function Chain(xs...; name::NAME_TYPE=nothing, disable_optimizations::Bool=false)
     xs = disable_optimizations ? xs : _flatten_model(xs)
